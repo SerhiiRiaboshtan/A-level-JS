@@ -7,15 +7,19 @@ function task1(){
     console.log('Version 1'); 
     // Считаем что число может принадлежать только к одной группе
     for(i=1; i<=10; i++){
-        if(i%2===0 && i%3!==0){
+        if(i%3===0){
+            console.log(`${i}  FizBuz`);
+            continue;
+        }
+        if(i%2===0){
             console.log(`${i}  Fiz`);
             continue;
         }
-        else if(i%2!==0 && i%3!==0){
+        else if(i%2!==0){
             console.log(`${i}  Buz`);
             continue;
         }
-        console.log(`${i}  FizBuz`);
+        
     }
     console.log('Version 2'); 
     /* Считаем что число может принадлежать к двум группам 
