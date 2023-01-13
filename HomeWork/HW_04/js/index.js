@@ -13,7 +13,6 @@ function task1(){
     for(const key in capitalName){
         console.log(`Capital of ${capitalName[key]} is a ${key}`);
     }
-          
 }
 
 // 2) Створити функцію яка виведе багатовимірний масив A. 
@@ -28,11 +27,11 @@ function task2(){
         let arrString='';
         for(key in element){
             if(element[key]>maxValue) maxValue=element[key];
-            //console.log(`${element[key]}`); //Это если надо вывести все значения из массива в столбик строкой
-            //arrString+=`${element[key]} `; //Это если надо вывести внутренние массивы в строчку строкой
+            //console.log(`${element[key]}`); //Это если надо вывести все значения из массива в столбик
+            arrString+=`${element[key]} `;
         }
-        console.log(element); //это просто вывести каждый элемент массива как кучку внутренних массивчиков в столбик
-        //console.log(arrString); Эта строка вместе со строкой 32 в паре...
+        //console.log(element);
+        console.log(arrString); 
     });
     console.log(`Max value is ${maxValue}`);
 }
@@ -72,17 +71,13 @@ function task4(){
     console.log(`Заданный массив ${arr}`);
     //Находим самое минимальное и максимальное числа. Запоминаем индекс минимального числа
     for(let i=1; i<arr.length; i++){
-        if(arr[i]<Min1){
-            Min1=arr[i];
-            indexMin1=i;
-        }
+        if(arr[i]<Min1) Min1=arr[i];
         if(arr[i]>Min2) Min2=arr[i];
     }
+    indexMin1=arr.indexOf(Min1);
     //Ищем второе минимальное число...
     for(let i=0; i<arr.length; i++){
-        if(i!=indexMin1 && arr[i]<=Min2) {
-            Min2=arr[i];
-        }
+        if(i!=indexMin1 && arr[i]<=Min2) Min2=arr[i];   
     }
     console.log(`Первое маленькое число ${Min1}, второе ${Min2}, их сумма равна ${Min1+Min2}`);
 }
@@ -94,8 +89,6 @@ function task5(){
     console.log('HW04 task5');
     const arr = [1, 1, 1, 1, 0, 1, 1, 1, 0 , 0, 1];
     let strArr='';
-    for(i=0; i<arr.length; i++){
-        strArr+=arr[i];
-    }
+    for(i=0; i<arr.length; i++) strArr+=arr[i];
     console.log(`В массиве было двоичное число ${strArr} в десятичной системе оно соответствует ${parseInt(strArr, 2)}`);
 }
