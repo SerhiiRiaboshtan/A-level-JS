@@ -197,18 +197,38 @@ function task9(){
 // Розархівуємо файл, кладемо його в дерикторію з js файлом з рішенням вашої дз і підключаємо
 //  в index.html перед js файлом з вашим дз
 function myJoin(sep){
-    let sep1=sep;
-    let str=''
-    if(sep1===undefined) sep=',';
+    let str='';
+    if(sep===undefined) sep=',';
     for(const key in condidateArr) str=str+condidateArr[key].name+sep;
     return str.slice(0, str.length-1);
 }
-// function myReduce(arr){
-
-// }
+function myReduce(arr, func, acc){
+    //debugger;
+    let i=1;
+    let previousValue, currentValue;
+    if(acc===undefined){
+        previousValue=arr[0];
+    }
+    else {
+        previousValue=acc;
+        i=0;
+    }
+    for(i; i<arr.length; i++){
+        currentValue=func(previousValue, arr[i]);
+        previousValue=currentValue;
+    }
+    return currentValue;
+}
+function func0(previousValue,  currentValue){
+        return [...previousValue, ...currentValue.books];
+}
 function task10(){
     console.clear();
     console.log("HW06 task10");
-    console.log(myJoin('-'));
-    // console.log(myReduce([0, 1, 2, 3, 4]));
+    console.log(myJoin('_'));
+    console.log(myReduce([
+        { name: "Anna", books: ["Bible", "Harry Potter"], age: 21 },
+        { name: "Bob", books: ["War and peace", "Romeo and Juliet"], age: 26 },
+        { name: "Alice", books: ["The Lord of the Rings", "The Shining"], age: 18 }
+        ], func0,  ["Alphabet"]));
 }
