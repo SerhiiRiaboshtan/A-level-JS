@@ -219,9 +219,9 @@ function myReduce(arr, func, acc){
     }
     return currentValue;
 }
-function func0(previousValue,  currentValue){
-        return [...previousValue, ...currentValue.books];
-}
+// function func0(previousValue,  currentValue){
+//         return [...previousValue, ...currentValue.books];
+//}
 function task10(){
     console.clear();
     console.log("HW06 task10");
@@ -230,5 +230,6 @@ function task10(){
         { name: "Anna", books: ["Bible", "Harry Potter"], age: 21 },
         { name: "Bob", books: ["War and peace", "Romeo and Juliet"], age: 26 },
         { name: "Alice", books: ["The Lord of the Rings", "The Shining"], age: 18 }
-        ], func0,  ["Alphabet"]));
+        ], func=(previousValue,  currentValue)=>{
+            return [...previousValue, ...currentValue.books]},  ["Alphabet"]));
 }
