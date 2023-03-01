@@ -56,7 +56,7 @@ function task4(){
                 children: [
                 {
                     tagName:'span',
-                    children: 'Enter a data please:',
+                    children: ['Enter a data please:'],
                 },
                 {
                     tagName:'br'
@@ -84,14 +84,14 @@ function task4(){
                     tagName:'button',
                     attrs:{
                         id:'ok',
-                        children:'Ok',
+                        children:['Ok'],
                     }
                 },
                 {
                     tagName:'button',
                     attrs:{
                         id:'cancel',
-                        children:'Cancel',
+                        children:['Cancel'],
                     }
                 },
                 ]
@@ -117,7 +117,7 @@ function task5(){
                 {
                     tagName:'span',
                     parent:'div',
-                    children: 'Enter a data please:',
+                    children: ['Enter a data please:'],
                 },
                 {
                     tagName:'br',
@@ -150,7 +150,7 @@ function task5(){
                     parent:'div',
                     attrs:{
                         id:'ok',
-                        children:'Ok',
+                        children:['Ok'],
                     }
                 },
                 {
@@ -158,7 +158,7 @@ function task5(){
                     parent:'div',
                     attrs:{
                         id:'cancel',
-                        children:'Cancel',
+                        children:['Cancel'],
                     }
                 },
                 ]
