@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="./css/style.css">
+    <title>Homework 6.2 Redux</title>
+    <script src="./js/index.js"></script>
+</head>
+<body>
+    <button onclick="task1()">Task1</button>
+    <div style="display: flex; flex-direction: row; width: 1200px; justify-content: space-around;">
+        <div>
+            <table id="stall" border= "1px" style="width:500px">
+                <thead>
+                    <tr>
+                        <th colspan="4">Товары в ларьке</th>
+                    </tr>
+                    <tr>
+                        <th>№</th>
+                        <th>Наименование</th>
+                        <th>Кол-во</th>
+                        <th>Цена</th>
+                    </tr>
+                </thead>
+                <tbody id="stallBody">
+              
+                </tbody>
+            </table>
+            <br><br>
+            <!-- <label>Касса ларька:<input id='cashStall' border="1" disabled="true"></label> -->
+        </div>
+        <div>
+            <p style="font-weight: bold;">Телодвижения пользователя:</p>
+            <label>Выберите товар:<select name="productList" id="productList"></select>Количество товара: <input border="1" id="kvo"></label>
+            
+            <div style="display: flex; justify-content: space-between;"><button id='buyButton'>Купить</button><label>Кошелёк<input type="number" id='wallet'></label></div>
+        </div>
+    </div>
+</body>
+</html>
+
