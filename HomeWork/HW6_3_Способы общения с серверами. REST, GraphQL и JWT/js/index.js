@@ -52,11 +52,16 @@ async function PedestrianTrafficLight(parent, timeRed, timeGreen, timePedestrian
         
         red.style=colorLamp('red', 'On');
         if(flag){    
-            flag=false;
             await delay(timeRed); 
         }else{
             const waitPromise=await Promise.race([domEventPromise(btn, 'click'), delay(timeRed)]);
-            if(waitPromise!==timeRed)flag=true; 
+            if(waitPromise!==timeRed){
+                flag=true;
+                ;(async()=>{
+                    await delay(timePedestrian);
+                    flag=false;
+                })();
+            } 
         }
         red.style=colorLamp('red');
     }
@@ -64,7 +69,7 @@ async function PedestrianTrafficLight(parent, timeRed, timeGreen, timePedestrian
 function task2(){
     console.clear();
     console.log("HW task2");
-    PedestrianTrafficLight(document.body, 10000, 3000, 30000);
+    PedestrianTrafficLight(document.body, 3000, 2000, 16000);
 }
 
 // 3
