@@ -55,34 +55,34 @@ function testData(str){
 function createPersonClosure(name, surname){
     let age=0;
     let fatherName='';
-    getName =       function(){
+    const getName =       function(){
                         return `${name}`;
                     }
-    getSurname =    function(){
+    const getSurname =    function(){
                         return `${surname}`;
                     }
-    getFatherName = function(){
+    const getFatherName = function(){
                         return `${fatherName}`;
                     }
-    getAge =        function(){
+    const getAge =        function(){
                         return `${age}`;
                     }
-    getFullName =   function(){
+    const getFullName =   function(){
                         return `${surname} ${name} ${fatherName}`;
                     }
-    setName =       function(newName){
+    const setName =       function(newName){
                         return (testData(newName)? name=newName:name);
                     }
-    setSurname =    function(newSurname){
+    const setSurname =    function(newSurname){
                         return(testData(newSurname)?surname=newSurname:surname);
                     }
-    setFatherName = function(newFatherName){
+    const setFatherName = function(newFatherName){
                         return(testData(newFatherName)?fatherName=newFatherName:fatherName);
                     }
-    setAge =        function(newAge){
+    const setAge =        function(newAge){
                         return ((newAge>=0 && newAge<=100)?age=newAge:age);
                     }
-    setFullName =   function(FullName){
+    const setFullName =   function(FullName){
                         let arr=FullName.split(' ');
                         if(arr.length===3){
                             surname=setSurname(arr[0]);
@@ -113,34 +113,34 @@ function task3(){
 // const a = createPersonClosureDestruct(createPerson("Вася Пупкин"))
 // const b = createPersonClosureDestruct({name: 'Николай', age: 75})
 function createPersonClosureDestruct({name='Ivan', surname='Ivanov', fatherName='Ivanovich', age=18}){
-    getName =       function(){
+    const getName =       function(){
         return `${name}`;
     }
-getSurname =    function(){
+    const getSurname =    function(){
         return `${surname}`;
     }
-getFatherName = function(){
+    const getFatherName = function(){
         return `${fatherName}`;
     }
-getAge =        function(){
+    const getAge =        function(){
         return `${age}`;
     }
-getFullName =   function(){
+    const getFullName =   function(){
         return `${surname} ${name} ${fatherName}`;
     }
-setName =       function(newName){
+    const setName =       function(newName){
         return (testData(newName)? name=newName:name);
     }
-setSurname =    function(newSurname){
+    const setSurname =    function(newSurname){
         return(testData(newSurname)?surname=newSurname:surname);
     }
-setFatherName = function(newFatherName){
+    const setFatherName = function(newFatherName){
         return(testData(newFatherName)?fatherName=newFatherName:fatherName);
     }
-setAge =        function(newAge){
+    const setAge =        function(newAge){
         return ((newAge>=0 && newAge<=100)?age=newAge:age);
     }
-setFullName =   function(FullName){
+    const setFullName =   function(FullName){
         let arr=FullName.split(' ');
         if(arr.length===3){
             surname=setSurname(arr[0]);
@@ -270,7 +270,7 @@ function getSetForm(parent, getSet){
     for(key in getSet){
         if(key.substring(0,3)==='get'){
             const keyName=key.substring(3,);
-            inputs={...inputs, [keyName]:addInDom(keyName, parent, !('set'+keyName in getSet)?true:false)};
+            inputs={...inputs, [keyName]:addInDom(keyName, parent, !('set'+keyName in getSet))};
         }
     }
     const updateInputs = () => { 
