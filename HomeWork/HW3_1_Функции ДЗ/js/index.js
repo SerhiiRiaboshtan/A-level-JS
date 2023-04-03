@@ -10,9 +10,11 @@ function task1(){
 // Создайте функцию createPerson, которая принимает два параметра: name и surname, 
 // и возвращает объект с ключами name, surname, getFullName. getFullName должна быть функцией, 
 // которая работает с объектом через this, а так же готова к тому, что в объекте в последствии добавить ключ fatherName
-function createPerson(Name, Surname){
-    getFullName=function() {return `${this.Name} ${this.hasOwnProperty('fatherName')?this.fatherName:''} ${this.Surname}`};
-    return {Name:Name, Surname:Surname, getFullName};
+function createPerson(name, surname){
+    getFullName=function(){
+        return `${this.name} ${this.hasOwnProperty('fatherName')?this.fatherName:''} ${this.surname}`;
+    }
+    return {"name":name, "surname":surname, getFullName};
 }
 function task2(){
     console.clear();
@@ -21,7 +23,7 @@ function task2(){
     const b = createPerson("Анна", "Иванова");
     const c = createPerson("Елизавета", "Петрова");
     console.log(a.getFullName()); //Вася Пупкин
-    a.fatherName = 'Иванович' ;   //Вася Иванович Пупкин
+    a.fatherName = 'Иванович';   //Вася Иванович Пупкин
     console.log(a.getFullName()); //Вася Иванович Пупкин
     console.log(b.getFullName());//Анна Иванова
     console.log(c.getFullName());//Елизавета Петрова
@@ -34,8 +36,8 @@ function task2(){
 //  getName // getSurname // getFatherName // getAge // getFullName
 // Эти функции должны возвращать переменные, объявленные в функции createPersonClosure
 // Следующие функции:
-// setName // setSurname // setFatherName // setAge // setFullName
-// должны принимать один параметр (newName, newSurname и т.п.), проверять его на корректность и менять значение переменных, объявленных внутри createPersonClosure. Проверки на корректность:
+// setName // setsurname // setFatherName // setAge // setFullName
+// должны принимать один параметр (newName, newsurname и т.п.), проверять его на корректность и менять значение переменных, объявленных внутри createPersonClosure. Проверки на корректность:
 // имя, фамилия, отчество должно быть строкой с большой буквы
 // возраст должен быть числом от 0 до 100.
 // Если проверка на корректность не пройдена, функция не должна менять соответстующую переменную.
@@ -50,27 +52,45 @@ function testData(str){
     }
     return true;
 }
-function createPersonClosure(Name, Surname){
-    let Age=0;
-    let FatherName='';
-    getName=function(){return `${Name}`};
-    getSurname=function(){return `${Surname}`};
-    getFatherName=function(){return `${FatherName}`};
-    getAge=function(){return `${Age}`};
-    getFullName=function(){return `${Surname} ${Name} ${FatherName}`};
-    setName=function(newName){return (testData(newName)? Name=newName:Name)}
-    setSurname=function(newSurname){return(testData(newSurname)?Surname=newSurname:Surname)}
-    setFatherName=function(newFathername){return(testData(newFathername)?FatherName=newFathername:FatherName)}
-    setAge=function(newAge){return ((newAge>=0 && newAge<=100)?Age=newAge:Age)};
-    setFullName=function(FullName){
-        let arr=FullName.split(' ');
-        if(arr.length===3 && testData(arr[0]) && testData(arr[1]) && testData(arr[2])){
-            Name=arr[1];
-            Surname=arr[0];
-            FatherName=arr[2];
-        }
-        return `${Name} ${FatherName} ${Surname}`;
-    }
+function createPersonClosure(name, surname){
+    let age=0;
+    let fatherName='';
+    getName =       function(){
+                        return `${name}`;
+                    }
+    getSurname =    function(){
+                        return `${surname}`;
+                    }
+    getFatherName = function(){
+                        return `${fatherName}`;
+                    }
+    getAge =        function(){
+                        return `${age}`;
+                    }
+    getFullName =   function(){
+                        return `${surname} ${name} ${fatherName}`;
+                    }
+    setName =       function(newName){
+                        return (testData(newName)? name=newName:name);
+                    }
+    setSurname =    function(newSurname){
+                        return(testData(newSurname)?surname=newSurname:surname);
+                    }
+    setFatherName = function(newFatherName){
+                        return(testData(newFatherName)?fatherName=newFatherName:fatherName);
+                    }
+    setAge =        function(newAge){
+                        return ((newAge>=0 && newAge<=100)?age=newAge:age);
+                    }
+    setFullName =   function(FullName){
+                        let arr=FullName.split(' ');
+                        if(arr.length===3){
+                            surname=setSurname(arr[0]);
+                            name=setName(arr[1]);
+                            fatherName=setFatherName(arr[2]);
+                        }
+                        return `${surname} ${name} ${fatherName}`;
+                    }
     return {getName, getSurname, getFatherName, getAge, getFullName, setName, setSurname, setFatherName, setAge, setFullName };
 }
 function task3(){
@@ -79,15 +99,12 @@ function task3(){
     const a = createPersonClosure("Вася", "Пупкин");
     const b = createPersonClosure("Анна", "Иванова");
     console.log(a.getName());
-    
     a.setAge(15);
     a.setAge(150); //не работает
     b.setFullName("Петрова Анна Николаевна");
-    console.log(b.getFatherName()); //Николаевна
+    console.log(b.getFatherName());
     a.setName('Vasya');
-    console.log(a);
-    console.log(b);
-    debugger;
+    console.log(a.getName());
 }
 
 // 4 createPersonClosureDestruct
@@ -95,34 +112,52 @@ function task3(){
 // Задайте значения по умолчанию
 // const a = createPersonClosureDestruct(createPerson("Вася Пупкин"))
 // const b = createPersonClosureDestruct({name: 'Николай', age: 75})
-function createPersonClosureDestruct({Name='Ivan', Surname='Ivanov', FatherName='Ivanovich', Age=18}){
-    getName=function(){return `${Name}`};
-    getFatherName=function(){return `${FatherName}`};
-    getSurname=function(){return `${Surname}`};
-    getAge=function(){return `${Age}`};
-    getFullName=function(){return `${Surname} ${Name} ${FatherName}`};
-    setName=function(newName){return (testData(newName)? Name=newName:Name)}
-    setSurname=function(newSurname){return(testData(newSurname)?Surname=newSurname:Surname)}
-    setFatherName=function(newFathername){return(testData(newFathername)?FatherName=newFathername:FatherName)}
-    setAge=function(newAge){return ((newAge>=0 && newAge<=100)?Age=newAge:Age)};
-    setFullName=function(FullName){
-        let arr=FullName.split(' ');
-        if(arr.length===3 && testData(arr[0]) && testData(arr[1]) && testData(arr[2])){
-            Name=arr[1];
-            Surname=arr[0];
-            FatherName=arr[2];
-        }
-        return `${Surname} ${Name} ${FatherName}`;
+function createPersonClosureDestruct({name='Ivan', surname='Ivanov', fatherName='Ivanovich', age=18}){
+    getName =       function(){
+        return `${name}`;
     }
-    return {getName, getSurname, getFatherName, getAge, getFullName, setName, setSurname, setFatherName, setAge, setFullName };
+getSurname =    function(){
+        return `${surname}`;
+    }
+getFatherName = function(){
+        return `${fatherName}`;
+    }
+getAge =        function(){
+        return `${age}`;
+    }
+getFullName =   function(){
+        return `${surname} ${name} ${fatherName}`;
+    }
+setName =       function(newName){
+        return (testData(newName)? name=newName:name);
+    }
+setSurname =    function(newSurname){
+        return(testData(newSurname)?surname=newSurname:surname);
+    }
+setFatherName = function(newFatherName){
+        return(testData(newFatherName)?fatherName=newFatherName:fatherName);
+    }
+setAge =        function(newAge){
+        return ((newAge>=0 && newAge<=100)?age=newAge:age);
+    }
+setFullName =   function(FullName){
+        let arr=FullName.split(' ');
+        if(arr.length===3){
+            surname=setSurname(arr[0]);
+            name=setName(arr[1]);
+            fatherName=setFatherName(arr[2]);
+        }
+        return `${surname} ${name} ${fatherName}`;
+    }
+return {getName, getSurname, getFatherName, getAge, getFullName, setName, setSurname, setFatherName, setAge, setFullName };
 }
 function task4(){
     console.clear();
     console.log("Homework 3.1 task4");
     const a = createPersonClosureDestruct(createPerson("Вася", "Пупкин"));
-    const b = createPersonClosureDestruct({Name: 'Николай', Age: 75});
-    console.log(a);
-    console.log(b);
+    const b = createPersonClosureDestruct({name: 'Николай', age: 75});
+    console.log(a.getFullName(), a.getAge());
+    console.log(b.getFullName(), b.getAge());
 }
 
 // 5 isSorted
@@ -172,97 +207,93 @@ function task6(){
 // b.setFullName("Петрова Анна Николаевна")
 // Обратите внимание, что при изменении ФИО должны поменяться поля имя, отчество и фамилия
 function personForm(parent, person){
-    const parentFind=document.getElementById(parent);
-    const Name=document.createElement('input'); Name.id='Name'; parentFind.appendChild(Name); Name.value=person.getName();
-    Name.oninput=()=>{
-            Name.value=person.setName(Name.value);
-            FullName.value=person.setFullName(`${Surname} ${Name} ${FatherName}`);
+    const name=document.createElement('input');
+    parent.appendChild(name); 
+    name.value=person.getName();
+    name.oninput=()=>{
+            name.value=person.setName(name.value);
+            fullName.value=person.setFullName(`${surname} ${name} ${fatherName}`);
         }
-    const FatherName=document.createElement('input'); FatherName.id='FatherName'; parentFind.appendChild(FatherName); FatherName.value=person.getFatherName();
-    FatherName.oninput=()=>{
-            FatherName.value=person.setFatherName(FatherName.value);
-            FullName.value=person.setFullName(`${Surname} ${Name} ${FatherName}`);
+    const fatherName=document.createElement('input');
+    parent.appendChild(fatherName);
+    fatherName.value=person.getFatherName();
+    fatherName.oninput=()=>{
+            fatherName.value=person.setFatherName(fatherName.value);
+            fullName.value=person.setFullName(`${surname} ${name} ${fatherName}`);
         }
-    const Surname=document.createElement('input'); Surname.id='Surname'; parentFind.appendChild(Surname); Surname.value=person.getSurname();
-    Surname.oninput=()=>{
-            Surname.value=person.setSurname(Surname.value);
-            FullName.value=person.setFullName(`${Surname} ${Name} ${FatherName}`);
+    const surname=document.createElement('input');
+    parent.appendChild(surname);
+    surname.value=person.getSurname();
+    surname.oninput=()=>{
+            surname.value=person.setSurname(surname.value);
+            fullName.value=person.setFullName(`${surname} ${name} ${fatherName}`);
+        }
+    const age=document.createElement('input');
+    parent.appendChild(age);
+    age.value=person.getAge();
+    age.oninput=()=>{
+        age.value=setAge(age.value);
     }
-    const Age=document.createElement('input'); Age.id='age'; parentFind.appendChild(Age); Age.value=person.getAge();
-    Age.oninput=()=>{
-        Age.value=setAge(Age.value);
-    }
-    const FullName=document.createElement('input'); FullName.id='Fullname'; parentFind.appendChild(FullName); FullName.value=person.getFullName();
-    FullName.oninput=()=>{
-        FullName.value=setFullName(FullName.value);
-        Name.value=getName();
-        Surname.value=getSurname();
-        FatherName.value=getFatherName();
+    const fullName=document.createElement('input');
+    parent.appendChild(fullName);
+    fullName.value=person.getFullName();
+    fullName.oninput=()=>{
+        fullName.value=setFullName(fullName.value);
+        name.value=getName();
+        surname.value=getSurname();
+        fatherName.value=getFatherName();
     }
 }
 function task7(){
     console.clear();
     console.log("Homework 3.1 task7");
-    personForm('container', createPersonClosureDestruct({Name: 'Николай', Age: 75}));
+    const parent=document.getElementById('container');
+    personForm(parent, createPersonClosureDestruct({name: 'Николай', age: 75}));
 }
 
 // 8 getSetForm
-function addInDOM(Name, nameDOM, parent, person){
-    let parentFind;
-    const nameTemp=document.createElement('input'); 
-    nameTemp.id=nameDOM; 
-    nameTemp.placeholder=Name;
+function addInDom(name, parent, disableInput){
+    const nameTemp=document.createElement('input');  
+    nameTemp.placeholder=name;
     nameTemp.type="text";
     const labelTemp=document.createElement('label');
-    labelTemp.id='label'+Name;
-    labelTemp.for=nameDOM;
-    labelTemp.innerText=Name+":";
+    labelTemp.innerText=name+":";
     labelTemp.style="display: flex; justify-content: space-between; margin-left: 20px" ;
-    parentFind=document.getElementById(parent);
-    parentFind.appendChild(labelTemp);
-    parentFind=document.getElementById(labelTemp.id);
-    parentFind.appendChild(nameTemp);
-    nameTemp.oninput=function(){
-        // debugger;
-        const tempName=document.getElementById(this.id);
-        const funcName='set'+Name;
-        tempName.value=person['set'+Name](tempName.value);
-        updateInputs(person);
-    }   
+    parent.appendChild(labelTemp);
+    labelTemp.appendChild(nameTemp);
+    if(disableInput) nameTemp.disabled=true;
+    return nameTemp;   
 }
-let inputs={}
-function updateInputs(person){
-    debugger;
-    for(key in inputs){
-        const tempEl=document.getElementById(inputs[key]);
-        tempEl.value=person['get'+key](tempEl.value);
-    }
-}   
-function getSetForm(parent, person){
+function getSetForm(parent, getSet){
     //заполняем реестр и формируем инпуты в DOM
-    const arrSet=[];
-    for(key in person){
+    let inputs={};
+    for(key in getSet){
         if(key.substring(0,3)==='get'){
             const keyName=key.substring(3,);
-            if(!inputs.hasOwnProperty(keyName)){
-                const keyDOM='input'+key.substring(3,)+'DOM';
-                Object.assign(inputs, {[keyName]:keyDOM});
-                addInDOM(keyName, keyDOM, parent, person);
-            } 
+            inputs={...inputs, [keyName]:addInDom(keyName, parent, !('set'+keyName in getSet)?true:false)};
         }
-        if(key.substring(0,3)==='set') arrSet.push(key.substring(3,));// Запоминаем имена set функций (без set)
     }
-    //проверяем наличие функций setЧТОТО аналогичных по имени getЧТОТО
-    //arrSet.shift(); // т.к.у нас совпадают get и set, то временно убираем один set для проверки работы 
-    for(key in inputs) if(arrSet.indexOf(key)===-1) document.getElementById(inputs[key]).disabled = true; 
-    updateInputs(person);
+    const updateInputs = () => { 
+        for(key in inputs){
+            inputs[key].value=getSet['get'+key]();
+        }
+    }
+    for(let key in inputs){
+        if(('set'+key) in getSet){    
+            inputs[key].oninput=()=>{
+                inputs[key].value=getSet['set'+key](inputs[key].value);
+                updateInputs();
+            }
+        }
+    }
+    updateInputs();
 }
 function task8(){
     console.clear();
     console.log("Homework 3.1 task8");
-    // const person=createPersonClosureDestruct({Name: 'Николай', Age: 75});
-    // getSetForm('container', person);
-
+    
+    const person=createPersonClosureDestruct({name: 'Николай', age: 75});
+    
     let car;
     {   
     let brand = 'BMW', model = 'X5', volume = 2.4
@@ -306,5 +337,8 @@ function task8(){
         }
     }
     }
-    getSetForm('container', car);
+    const parent=document.getElementById('container'); 
+    getSetForm(parent, person);
+
+    getSetForm(parent, car);
 }
