@@ -1,0 +1,55 @@
+
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <title>Module</title>
+        <meta charset='utf8' />
+        <style>
+            #mainContainer {
+                display: flex;
+            }
+            #aside {
+                width: 30%;
+            }
+            #aside > a{
+                display: block;
+            }
+            header {
+                min-height: 100px;
+                background-color: #AAA;
+            }
+        </style>
+    </head>
+    <body>
+        <header>
+            <div id='cartIcon' style="display: flex; justify-content: end; align-items: center; margin-right: 20px;">
+                <div style="display: flex;  flex-direction: column; margin-right: 20px; ">
+                    <a id="btnLogin" href="#/login/">Login</a>
+                    <a id="btnRegister" href="#/register/">Registration</a>
+                </div>
+                <div style="display: flex;  flex-direction: column ; margin-right: 20px;">
+                    <a id="btnOrders" href="#/orders/">Заказы</a>
+                    <button id="btnLogout">Выход</и>
+                </div>
+                <div>Пользователь:</div><div id="user"></div>
+                
+                <div style="display: flex; justify-content: center; align-items: center;">
+                    <img src="img/cart.webp">
+                    <div id="goodsInCart" >5</div>
+                    
+                </div>
+            </div>
+        </header>
+        <div id='mainContainer'>
+            <aside id='aside'>
+              <!-- Категории
+                Сюда надо воткнуть список корневых категорий интернет-магазина -->
+            </aside>
+            <main id='main'>
+                Контент
+            </main>
+        </div>
+        <script src="js/loginForm.js"></script>
+        <script src='js/index.js'></script>
+    </body>
+</html>
