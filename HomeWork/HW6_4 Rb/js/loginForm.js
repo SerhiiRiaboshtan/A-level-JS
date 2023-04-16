@@ -55,3 +55,7 @@ function Password(parent, open){
     }
     this.labelPassword.appendChild(checkTemp);
 }
+function recallDate(timeStamp){
+    const d=new Date(timeStamp);
+    return (d.getDate()<10?'0'+d.getDate():d.getDate())+'.'+(d.getMonth()<9?('0'+(d.getMonth()+1)):(d.getMonth()+1))+'.'+d.getFullYear()+'   '+(d.getHours()<10?'0'+d.getHours():d.getHours())+':'+(d.getMinutes()<10?'0'+d.getMinutes():d.getMinutes());
+}

@@ -70,39 +70,35 @@ const reducers = {
 
 function cartReducer(state={}, {type, count, good}){
     if(type==='CART_ADD' && count>0){
-        let newState={...state};
-        if(Object.keys(newState).includes(good._id)){
-            newState[good._id].count+=count;
+        if(state[good._id]){
+            state[good._id].count+=count;
         }else{
-            newState={...newState, ...{[good._id]:{"count": count, "good": {"name": good.name, "price": good.price, "description": good.description, "images": good.images}}}};
+            state={...state, ...{[good._id]:{"count": count, good}}};
         }
-        return newState;
+        return state;
     }
     if(type==='CART_SUB' && count>0){
-        let newState={...state};
-        if(Object.keys(newState).includes(good._id)){
-            newState[good._id].count-=count;
-            if(newState[good._id].count<1){
-                delete newState[good._id];
+        if(state[good._id]){
+            state[good._id].count-=count;
+            if(state[good._id].count<1){
+                delete state[good._id];
             }
         }
-        return newState;
+        return state;
     }
     if(type==='CART_DEL'){
-        let newState={...state};
-        if(Object.keys(newState).includes(good._id)){
-            delete newState[good._id];
+        if(state[good._id]){
+            delete state[good._id];
         }
-        return newState;
+        return state;
     }
     if(type==='CART_SET'){
-        let newState={...state};
-        if(Object.keys(newState).includes(good._id) && count>0){
-            newState[good._id].count=count;
-        }else if(Object.keys(newState).includes(good._id) && count<1){
-            delete newState[good._id];
+        if(state[good._id] && count>0){
+            state[good._id].count=count;
+        }else if(store[good._id] && count<1){
+            delete state[good._id];
         }else if(count>0){
-            newState={...newState, ...{[good._id]:{"count": count, "good": {"name": good.name, "price": good.price, "description": good.description, "images": good.images}}}};
+            state={...state, ...{[good._id]:{"count": count, good}}};
         }
         return newState;
     }
@@ -217,6 +213,21 @@ const stateRegistration = () => {
     }    
 }
 store.subscribe(stateRegistration);
+    
+const stateOrder= () =>{
+    const [,route] = location.hash.split('/');
+    if (route !== 'cart') return;
+    if(store.getState().promise.newOrder){
+        const {status, payload} = store.getState().promise.newOrder;
+        if(status==='FULFILLED' && payload && Object.keys(store.getState().cart).length){
+            alert(`Заказ успешно создан!`);
+            store.dispatch(actionCartClear());
+        } else if(status==='FULFILLED' && !payload){
+            alert(`Невозможно создать заказ`);
+        }
+    }
+}
+store.subscribe(stateOrder);
 
 const actionPending   = (name)      => ({type: 'PROMISE', status: 'PENDING', name})
 const actionFulfilled = (name, payload)=> ({type: 'PROMISE', status: 'FULFILLED', payload, name})
@@ -273,7 +284,25 @@ const drawCat = (state) => {
             const {name, goods, parent, subCategories} = payload;
             main.innerHTML = `<h1>${name}</h1>`;
             for (const {_id, name, price, images} of goods){
-                main.innerHTML += `<a href="#/good/${_id}">${name}<br></a> <img src="http://shop-roles.node.ed.asmer.org.ua/${images[0].url}" style="width: 30%">`
+                const tempA=document.createElement('a');
+                tempA.href=`#/good/${_id}`;
+                tempA.innerText=`${name}`;
+                main.appendChild(tempA);
+                const tempName=document.createElement('p');
+                //tempName.innerText=`${name}`;
+                main.appendChild(tempName);
+                const tempImg=document.createElement('img');
+                tempImg.src=`http://shop-roles.node.ed.asmer.org.ua/${images[0].url}`;
+                tempImg.style=`width: 30%`;
+                main.appendChild(tempImg);
+                const tempBtn=document.createElement('button');
+                tempBtn.innerText='Добавить в корзину';
+                main.appendChild(tempBtn);
+                const tempBr=document.createElement('br');
+                main.append(tempBr);
+                tempBtn.addEventListener('click', ()=>{
+                    store.dispatch(actionCartAdd({_id, name, price, images}));
+                });
             }
         }
     }
@@ -295,8 +324,47 @@ const drawGood = (state) => {
         }
         if (status === 'FULFILLED'){
             const {_id, name, description, price, images} = payload;
-            main.innerHTML = `<h1>${name}</h1>`;
-            main.innerHTML += `<img src="http://shop-roles.node.ed.asmer.org.ua/${images[0].url}" >`
+            main.innerHTML ='';
+            let str=''; 
+            str += '<div id="carouselExampleIndicators" class="carousel slide w-50" data-ride="carousel">';
+            //main.innerHTML += `<img src="http://shop-roles.node.ed.asmer.org.ua/${images[0].url}" >`;
+            str+=`<h1>${name}</h1>`;
+            str +='<div class="carousel-inner">';
+            for(key in images){
+                if(key==='0'){
+                   str +='<div class="carousel-item active">'; 
+                }else  str +='<div class="carousel-item">';    
+                str += `<img src="http://shop-roles.node.ed.asmer.org.ua/${images[key].url}" class="d-block w-50" alt="...">`;
+                str +='</div>';
+            }
+            str +='</div>';
+            str +='<a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">';
+            str +='<span class="carousel-control-prev-icon" aria-hidden="true"></span>';
+            str +='<span class="sr-only">Previous</span>';
+            str +='</a>';
+            str +='<a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">';
+            str +='<span class="carousel-control-next-icon" aria-hidden="true"></span>';
+            str +='<span class="sr-only">Next</span>';
+            str +='</a>';
+            str +='</div>';
+            main.innerHTML +=str;
+            main.innerHTML +=`<p style>Описание: ${description}</p>`;
+            main.innerHTML +=`<p>Цена: ${price}</p>`;
+            const btnAdd=document.createElement('button');
+            btnAdd.innerText='Добавить в корзину';
+            main.appendChild(btnAdd);
+            btnAdd.addEventListener('click', ()=>{
+                store.dispatch(actionCartAdd(payload));
+            });
+            if(store.getState().cart[_id]){
+                const btnSub=document.createElement('button');
+                btnSub.innerText='Удалить из корзины';
+                main.appendChild(btnSub);
+                btnSub.addEventListener('click', ()=>{
+                    store.dispatch(actionCartSub(payload));
+                    updateCartAmount();
+                });
+            }
         }
     }
 store.subscribe(drawGood);
@@ -309,6 +377,17 @@ const actionGetOrders = () =>
           }
         }
         }`))
+
+const actionSetOrder = (goods) => 
+    actionPromise('newOrder', gql(`mutation newOrder($goods: [OrderGoodInput]) {
+        OrderUpsert(order: {orderGoods: $goods}) {
+          _id
+          createdAt
+          total
+        }
+      }
+      `, {"goods":goods}));
+
 const drawOrders =()=>{
     const [,route] = location.hash.split('/');
     if (route !== 'orders') return
@@ -323,13 +402,39 @@ const drawOrders =()=>{
             main.innerHTML+=`<p>Заказ №${Number(key)+1}:</p>`;
             let numberStr=1;
             for(key1 in payload[key].orderGoods){
-                main.innerHTML+=`<p style="padding-left: 20px">${numberStr}: ${payload[key].orderGoods[key1].good.name}</p>`;
+                main.innerHTML+=`<p style="padding-left: 20px">${numberStr}: ${payload[key].orderGoods[key1].good.name} ${payload[key].orderGoods[key1].count}</p>`;
                 numberStr++;
             }
         }
     }    
 }
 store.subscribe(drawOrders);
+
+const drawCart = () =>{
+    const [,route] = location.hash.split('/');
+    if (route !== 'cart') return;
+    const goodsInCart=store.getState().cart;
+    main.innerHTML = `<h1>Корзина</h1>`;
+    if(Object.keys(store.getState().cart).length){
+        for(key in goodsInCart){
+            main.innerHTML+=`<p>${goodsInCart[key].good.name}   ${goodsInCart[key].good.price}  ${goodsInCart[key].count}</p>` ;
+        }
+        main.innerHTML += `<button id=btnOrder>Заказать</button>`;
+        main.innerHTML += `<button id=btnClearCart>Очистить корзину</button>`;
+        btnClearCart.addEventListener('click', ()=>{
+            store.dispatch(actionCartClear());
+        });
+        btnOrder.addEventListener('click', ()=>{
+            const goodsInCart=store.getState().cart;
+            const arrGoods=[];
+            for(key in goodsInCart){
+                arrGoods.push({good:{'_id':goodsInCart[key].good._id}, 'count':goodsInCart[key].count});
+            }
+            store.dispatch(actionSetOrder(arrGoods));
+        })
+    } else main.innerHTML += `<p>Корзина пуста</p>`;
+}
+store.subscribe(drawCart);
 
 const  updateCartAmount = () => {
     const stateCart=Object.keys(store.getState().cart).length;
@@ -371,6 +476,9 @@ window.onhashchange = () => {
         },
         orders(){
             store.dispatch(actionGetOrders());
+        },
+        cart(){
+            drawCart();
         },
     }
 
