@@ -145,9 +145,9 @@ const Watch = ({seconds}) => {
   return (
     <div >
       <img className='Clock' src={ClockFace} alt=""  />
-      <img className='Clock' Style={`transform: rotate(${hour*30}deg)`} src={ClockFace_H} alt=""/>
-      <img className='Clock' Style={`transform: rotate(${min*6}deg)`} src={ClockFace_M} alt=""/>
-      <img className='Clock' Style={`transform: rotate(${sec*6}deg)`} src={ClockFace_S} alt=""/>
+      <img className='Clock' style={{transform: `rotate(${hour*30}deg)`}} src={ClockFace_H} alt=""/>
+      <img className='Clock' style={{transform: `rotate(${min*6}deg)`}} src={ClockFace_M} alt=""/>
+      <img className='Clock' style={{transform: `rotate(${sec*6}deg)`}} src={ClockFace_S} alt=""/>
     </div>  
   )
 }
@@ -176,12 +176,14 @@ const TimerControl2=() => {
 
 const Clock=()=>{
   const [seconds, setSec] = useState(0)
+  
   useEffect(()=>{
     const intervalId = setInterval(() => {  
       const currentDate=new Date()
       setSec(currentDate.getSeconds()+currentDate.getMinutes()*60+currentDate.getHours()*3600)
-  }, 100)
-  })
+  }, 1000)
+  console.log(intervalId)
+  },[])
   return(
     <>
       <Watch seconds={seconds}/>
@@ -245,8 +247,8 @@ const App=({logoText})=>
           {/* <TimerControl2/> */}
           <br/>
           </>
-          {/* <p style={{color:'red'}}>HW task ? Часики</p>
-          <Clock/> */}
+          <p style={{color:'red'}}>HW task ? Часики</p>
+          <Clock/>
       </header>
     </div>
 
