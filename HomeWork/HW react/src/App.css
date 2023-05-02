@@ -1,5 +1,6 @@
 .App {
   /*   text-align: center; */
+  color:grey;
   }
   
   .App-logo {
@@ -14,7 +15,7 @@
   }
   
   .App-header {
-    background-color: #282c34;
+    background-color: lightgray; 
     min-height: 20vh;
     display: flex;
     flex-direction: column;
@@ -22,6 +23,8 @@
   /*   justify-content: left; */
     font-size: calc(10px + 2vmin);
     color: white;
+    margin-left: 50px;
+    padding: 50px;
   }
   
   .App-link {
@@ -62,4 +65,10 @@
   }
   .GoodCard > p{
     font-size: 0.5em;
+  }
+  .Clock {
+    position: absolute;
+    width:400px;
+    top: 100px;
+    left: 100px;
   }
