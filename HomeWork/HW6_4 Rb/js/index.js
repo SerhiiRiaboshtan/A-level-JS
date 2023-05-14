@@ -65,44 +65,67 @@ function getGql (endpoint){
 const reducers = {
     promise: promiseReducer, //допилить много имен для многих промисо
     auth: authReducer,     //часть предыдущего ДЗ
-    cart: cartReducer,     //часть предыдущего ДЗ
+    cart: localStoredReducer(cartReducer, 'cart'),     //часть предыдущего ДЗ
 }
 
-function cartReducer(state={}, {type, count, good}){
-    if(type==='CART_ADD' && count>0){
-        if(state[good._id]){
-            state[good._id].count+=count;
-        }else{
-            state={...state, ...{[good._id]:{"count": count, good}}};
+function localStoredReducer(originalReducer, localStorageKey){
+    function wrapper(state, action){
+        if(state===undefined){
+            try{
+                return JSON.parse(localStorage[localStorageKey]);
+            }
+            catch(error){
+            }    
         }
-        return state;
+        const stateNew=originalReducer(state, action);
+        localStorage[localStorageKey]=JSON.stringify(stateNew);
+        return stateNew;
+    }
+    return wrapper;
+}
+// const storeTest = createStore(localStoredReducer(cartReducer, 'cart'));
+
+// storeTest.subscribe(() => console.log(storeTest.getState()));
+// storeTest.dispatch(actionCartAdd({_id: 'пиво', price: 50}));
+// storeTest.dispatch(actionCartAdd({_id: 'чипсы', price: 75}));
+
+function cartReducer(state={}, {type, count, good}){
+    newState={...state};
+    if(type==='CART_ADD' && count>0){
+        if(newState[good._id]){
+            newState[good._id].count+=count;
+        }else{
+            newState={...newState, ...{[good._id]:{"count": count, good}}};
+        }
+        return newState;
     }
     if(type==='CART_SUB' && count>0){
-        if(state[good._id]){
-            state[good._id].count-=count;
-            if(state[good._id].count<1){
-                delete state[good._id];
+        if(newState[good._id]){
+            newState[good._id].count-=count;
+            if(newState[good._id].count<1){
+                delete newState[good._id];
             }
         }
-        return state;
+        return newState;
     }
     if(type==='CART_DEL'){
-        if(state[good._id]){
-            delete state[good._id];
+        if(newState[good._id]){
+            delete newState[good._id];
         }
-        return state;
+        return newState;
     }
     if(type==='CART_SET'){
-        if(state[good._id] && count>0){
-            state[good._id].count=count;
-        }else if(store[good._id] && count<1){
-            delete state[good._id];
+        if(newState[good._id] && count>0){
+            newState[good._id].count=count;
+        }else if(newState[good._id] && count<1){
+            delete newState[good._id];
         }else if(count>0){
-            state={...state, ...{[good._id]:{"count": count, good}}};
+            newState={...newState, ...{[good._id]:{"count": count, good}}};
         }
         return newState;
     }
     if(type==='CART_CLEAR'){
+        localStorage.removeItem('cart');
         return {};
     }
     return state;
@@ -135,6 +158,7 @@ const actionFullLogin = (login, password) =>
 const actionFullRegister=(login, password) =>
     async dispatch => {
         await dispatch(actionRegister(login, password));
+        dispatch(actionFullLogin(login, password));
    }
 const actionLogin = (login, password) =>
     actionPromise('login', gql(`query login($login:String, $password:String){
@@ -161,7 +185,7 @@ function promiseReducer(state={}, {type, status, payload, error, name}){
         //имена добавить
         return {...state, [name]:{status, payload, error}}
     }
-    return state
+    return {...state}
 }
 
 const drawUserInfo = (state) => {
@@ -184,6 +208,7 @@ const drawUserInfo = (state) => {
 }
 store.subscribe(drawUserInfo);
 btnLogout.onclick=()=>{
+    store.dispatch(actionCartClear());
     store.dispatch(actionAuthLogout());
 }
 
@@ -378,6 +403,18 @@ const actionGetOrders = () =>
         }
         }`))
 
+const actionPrepareSetOrder = () =>
+    (dispatch, getState)  => {   
+        const goodsInCart=getState().cart;
+        const arrGoods=[];
+        for(key in goodsInCart){
+            arrGoods.push({good:{'_id':goodsInCart[key].good._id}, 'count':goodsInCart[key].count});
+        }
+        if(arrGoods.length!==0){
+           dispatch(actionSetOrder(arrGoods)); 
+        } else alert('Корзина пустая, заказывать нечего!');
+}
+
 const actionSetOrder = (goods) => 
     actionPromise('newOrder', gql(`mutation newOrder($goods: [OrderGoodInput]) {
         OrderUpsert(order: {orderGoods: $goods}) {
@@ -425,12 +462,7 @@ const drawCart = () =>{
             store.dispatch(actionCartClear());
         });
         btnOrder.addEventListener('click', ()=>{
-            const goodsInCart=store.getState().cart;
-            const arrGoods=[];
-            for(key in goodsInCart){
-                arrGoods.push({good:{'_id':goodsInCart[key].good._id}, 'count':goodsInCart[key].count});
-            }
-            store.dispatch(actionSetOrder(arrGoods));
+            store.dispatch(actionPrepareSetOrder());
         })
     } else main.innerHTML += `<p>Корзина пуста</p>`;
 }
@@ -469,7 +501,7 @@ window.onhashchange = () => {
             ////нарисовать форму регистрации, которая по нажатию кнопки Login делает store.dispatch(actionFullRegister(login, password))
             main.innerHTML = `<h1>Регистрация</h1>`;
             const rForm=new LoginFormConstructor(main);
-            rForm.btn.innerText='Reg';
+            rForm.btn.innerText='Зарегистрировать';
             rForm.clickBtn=(login, password)=>{
                 store.dispatch(actionFullRegister(login, password));
             }
