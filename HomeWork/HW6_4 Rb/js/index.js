@@ -1,25 +1,25 @@
 function createStore(reducer){
-    let state       = reducer(undefined, {}) //стартовая инициализация состояния, запуск редьюсера со state === undefined
-    let cbs         = []                     //массив подписчиков
+    let state       = reducer(undefined, {}) 
+    let cbs         = []                     
     
-    const getState  = () => state            //функция, возвращающая переменную из замыкания
-    const subscribe = cb => (cbs.push(cb),   //запоминаем подписчиков в массиве
-                             () => cbs = cbs.filter(c => c !== cb)) //возвращаем функцию unsubscribe, которая удаляет подписчика из списка
+    const getState  = () => state           
+    const subscribe = cb => (cbs.push(cb),   
+                             () => cbs = cbs.filter(c => c !== cb))
                              
     const dispatch  = action => { 
-        if (typeof action === 'function'){ //если action - не объект, а функция
-            return action(dispatch, getState) //запускаем эту функцию и даем ей dispatch и getState для работы
+        if (typeof action === 'function'){ 
+            return action(dispatch, getState) 
         }
-        const newState = reducer(state, action) //пробуем запустить редьюсер
-        if (newState !== state){ //проверяем, смог ли редьюсер обработать action
-            state = newState //если смог, то обновляем state 
-            for (let cb of cbs)  cb(state) //и запускаем подписчиков
+        const newState = reducer(state, action) 
+        if (newState !== state){ 
+            state = newState
+            for (let cb of cbs)  cb(state) 
         }
     }
     return {
-        getState, //добавление функции getState в результирующий объект
+        getState,
         dispatch,
-        subscribe //добавление subscribe в объект
+        subscribe
     }
 }
 
@@ -48,7 +48,7 @@ function getGql (endpoint){
             headers: {
                 "Content-Type": "application/json",
                 "Accept": "application/json",
-                ...(localStorage.authToken?{authorization: "Bearer "+localStorage.authToken}:{})  
+                ...(store.getState().auth.token?{authorization: "Bearer "+store.getState().auth.token}:{})  
             },
             body: JSON.stringify({query, variables}),
         }).then(res => res.json())
@@ -63,9 +63,9 @@ function getGql (endpoint){
 }
 
 const reducers = {
-    promise: promiseReducer, //допилить много имен для многих промисо
-    auth: authReducer,     //часть предыдущего ДЗ
-    cart: localStoredReducer(cartReducer, 'cart'),     //часть предыдущего ДЗ
+    promise: promiseReducer,
+    auth: localStoredReducer(authReducer, 'authToken'),
+    cart: localStoredReducer(cartReducer, 'cart'), 
 }
 
 function localStoredReducer(originalReducer, localStorageKey){
@@ -83,11 +83,6 @@ function localStoredReducer(originalReducer, localStorageKey){
     }
     return wrapper;
 }
-// const storeTest = createStore(localStoredReducer(cartReducer, 'cart'));
-
-// storeTest.subscribe(() => console.log(storeTest.getState()));
-// storeTest.dispatch(actionCartAdd({_id: 'пиво', price: 50}));
-// storeTest.dispatch(actionCartAdd({_id: 'чипсы', price: 75}));
 
 function cartReducer(state={}, {type, count, good}){
     newState={...state};
@@ -140,12 +135,10 @@ function authReducer(state={}, {type, token}){
     if(type==='AUTH_LOGIN'){
         const payload=jwtDecode(token);
         if(payload){
-            localStorage.authToken=token;
             return {token, payload};
         }
     }
     if(type==='AUTH_LOGOUT'){
-        localStorage.removeItem('authToken');
         return {};
     }
     return state;
@@ -174,15 +167,7 @@ const actionRegister = (login, password) =>
 const totalReducer = combineReducers(reducers);
 const store = createStore(totalReducer); 
 function promiseReducer(state={}, {type, status, payload, error, name}){
-// {
-//     имяПромиса1: {status, payload, error},
-//     имяПромиса2: {status, payload, error},
-//     имяПромиса3: {status, payload, error}
-//     ......
-// }
-    // console.log(name)
     if (type === 'PROMISE'){
-        //имена добавить
         return {...state, [name]:{status, payload, error}}
     }
     return {...state}
@@ -263,14 +248,14 @@ const actionAuthLogout = ()    => ({type: 'AUTH_LOGOUT'});
 
 const actionPromise = (name, promise) =>
     async dispatch => { 
-        dispatch(actionPending(name)) //сигнализируем redux, что промис начался
+        dispatch(actionPending(name))
         try{
-            const payload = await promise //ожидаем промиса
-            dispatch(actionFulfilled(name, payload)) //сигнализируем redux, что промис успешно выполнен
-            return payload //в месте запуска store.dispatch с этим thunk можно так же получить результат промиса
+            const payload = await promise
+            dispatch(actionFulfilled(name, payload))
+            return payload
         }
         catch (error){
-            dispatch(actionRejected(name, error)) //в случае ошибки - сигнализируем redux, что промис несложился
+            dispatch(actionRejected(name, error))
         }
     }
 const actionRootCats = () => 
@@ -314,7 +299,6 @@ const drawCat = (state) => {
                 tempA.innerText=`${name}`;
                 main.appendChild(tempA);
                 const tempName=document.createElement('p');
-                //tempName.innerText=`${name}`;
                 main.appendChild(tempName);
                 const tempImg=document.createElement('img');
                 tempImg.src=`http://shop-roles.node.ed.asmer.org.ua/${images[0].url}`;
@@ -352,7 +336,6 @@ const drawGood = (state) => {
             main.innerHTML ='';
             let str=''; 
             str += '<div id="carouselExampleIndicators" class="carousel slide w-50" data-ride="carousel">';
-            //main.innerHTML += `<img src="http://shop-roles.node.ed.asmer.org.ua/${images[0].url}" >`;
             str+=`<h1>${name}</h1>`;
             str +='<div class="carousel-inner">';
             for(key in images){
@@ -486,11 +469,8 @@ window.onhashchange = () => {
         },
         good(){
             store.dispatch(actionGoodById(_id))
-            // console.log('good', _id)
         },
         login(){
-            // console.log('А ТУТ ЩА ДОЛЖНА БЫТЬ ФОРМА ЛОГИНА')
-            //нарисовать форму логина, которая по нажатию кнопки Login делает store.dispatch(actionFullLogin(login, password))
             main.innerHTML = `<h1>Авторизация</h1>`;
             const lForm=new LoginFormConstructor(main);
             lForm.clickBtn=(login, password)=>{
@@ -498,7 +478,6 @@ window.onhashchange = () => {
             }
         },
         register(){
-            ////нарисовать форму регистрации, которая по нажатию кнопки Login делает store.dispatch(actionFullRegister(login, password))
             main.innerHTML = `<h1>Регистрация</h1>`;
             const rForm=new LoginFormConstructor(main);
             rForm.btn.innerText='Зарегистрировать';
@@ -518,8 +497,6 @@ window.onhashchange = () => {
         routes[route]()
     }
 }
-    
-store.dispatch(actionAuthLogin(localStorage.authToken));
 
 function jwtDecode(token){
     let arr=[];
